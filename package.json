@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "npx serve out -l 5000",
     "lint": "eslint",
     "ts-check": "tsc -p tsconfig.json"
   },
