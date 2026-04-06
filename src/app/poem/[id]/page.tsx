@@ -44,7 +44,7 @@ async function fetchPoemData(id: string): Promise<Poem | null> {
     const foundPoem = allPoemsData.poems.find((p: Poem) => p.number === parseInt(id));
 
     if (foundPoem) {
-      const pregeneratedImage = `/poems/poem-${foundPoem.number}.jpg`;
+      const pregeneratedImage = `/ai-poem-coze/poems/poem-${foundPoem.number}.jpg`;
       return {
         ...foundPoem,
         imageUrl: pregeneratedImage,
@@ -58,7 +58,9 @@ async function fetchPoemData(id: string): Promise<Poem | null> {
 }
 
 export default async function PoemDetailPage({ params }: { params: { id: string } }) {
-  const poem = await fetchPoemData(params.id);
+  // 确保 params 已解包（Next.js 15+ params 可能是 Promise）
+  const resolvedParams = await params;
+  const poem = await fetchPoemData(resolvedParams.id);
 
   if (!poem) {
     return (
