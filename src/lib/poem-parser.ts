@@ -16,7 +16,6 @@ export interface RawPoemData {
 export function parsePoemsFromContent(content: string): RawPoemData[] {
   const poems: RawPoemData[] = [];
   const lines = content.split('\n');
-  let currentCategory = '';
   let currentSeason = '';
   let currentFestival = '';
   let currentSection = '';
@@ -27,11 +26,9 @@ export function parsePoemsFromContent(content: string): RawPoemData[] {
 
     // 识别大分类（节气/节日）
     if (trimmedLine.includes('## （一）24节气类')) {
-      currentCategory = '节气';
       currentSection = '节气';
       continue;
     } else if (trimmedLine.includes('## （二）传统节日类')) {
-      currentCategory = '节日';
       currentSection = '节日';
       continue;
     }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -183,11 +184,13 @@ export default function PoemDetailClient({ poem }: PoemDetailClientProps) {
             </CardHeader>
             <CardContent>
               {poem.imageUrl ? (
-                <div className="aspect-video rounded-lg overflow-hidden">
-                  <img
+                <div className="aspect-video rounded-lg overflow-hidden relative">
+                  <Image
                     src={poem.imageUrl}
                     alt={poem.title}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    priority
                   />
                 </div>
               ) : (
@@ -234,7 +237,6 @@ export default function PoemDetailClient({ poem }: PoemDetailClientProps) {
                       {currentQuestion.options.map((option, idx) => {
                         const optionLetter = ['A', 'B', 'C', 'D'][idx];
                         const isSelected = selectedAnswers[currentQuestion.id] === optionLetter;
-                        const isCorrect = currentQuestion.correctAnswer === optionLetter;
 
                         return (
                           <Button

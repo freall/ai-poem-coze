@@ -1,6 +1,15 @@
 import PoemDetailClient from './PoemDetailClient';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import Link from 'next/link';
+
+interface Question {
+  id: string;
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  explanation: string;
+}
 
 interface Poem {
   id: number;
@@ -16,7 +25,7 @@ interface Poem {
   background?: string;
   translation?: string;
   imageUrl?: string;
-  questions?: any[];
+  questions?: Question[];
 }
 
 // 生成所有80首诗词的静态路径
@@ -32,7 +41,7 @@ async function fetchPoemData(id: string): Promise<Poem | null> {
     const filePath = join(process.cwd(), 'public', 'data', 'poems.json');
     const fileContent = readFileSync(filePath, 'utf-8');
     const allPoemsData = JSON.parse(fileContent);
-    const foundPoem = allPoemsData.poems.find((p: any) => p.number === parseInt(id));
+    const foundPoem = allPoemsData.poems.find((p: Poem) => p.number === parseInt(id));
 
     if (foundPoem) {
       const pregeneratedImage = `/poems/poem-${foundPoem.number}.jpg`;
@@ -56,9 +65,9 @@ export default async function PoemDetailPage({ params }: { params: { id: string 
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600 text-lg mb-4">诗词未找到</p>
-          <a href="/" className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+          <Link href="/" className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
             返回首页
-          </a>
+          </Link>
         </div>
       </div>
     );
