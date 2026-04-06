@@ -25,8 +25,9 @@ export default function Home() {
 
   const fetchCategories = async () => {
     try {
-      // 从静态JSON文件读取数据，考虑 basePath
-      const basePath = '/ai-poem-coze';
+      // 从静态JSON文件读取数据
+      // 检测是否在 GitHub Pages 子路径下
+      const basePath = window.location.pathname.startsWith('/ai-poem-coze') ? '/ai-poem-coze' : '';
       const response = await fetch(`${basePath}/data/poems.json`);
       const result = await response.json();
       if (result) {

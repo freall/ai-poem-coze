@@ -43,8 +43,12 @@ async function fetchPoemData(id: string): Promise<Poem | null> {
     const allPoemsData = JSON.parse(fileContent);
     const foundPoem = allPoemsData.poems.find((p: Poem) => p.number === parseInt(id));
 
+    // 检测是否是 GitHub Pages 部署
+    const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
+    const basePath = isGitHubPages ? '/ai-poem-coze' : '';
+
     if (foundPoem) {
-      const pregeneratedImage = `/ai-poem-coze/poems/poem-${foundPoem.number}.jpg`;
+      const pregeneratedImage = `${basePath}/poems/poem-${foundPoem.number}.jpg`;
       return {
         ...foundPoem,
         imageUrl: pregeneratedImage,
