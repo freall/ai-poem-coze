@@ -43,7 +43,6 @@ export default function PoemDetailPage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState({
     details: false,
-    image: false,
   });
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
@@ -61,8 +60,13 @@ export default function PoemDetailPage() {
       const response = await fetch(`/api/poems/${poemId}`);
       const result = await response.json();
       if (result.success) {
-        setPoem(result.data);
-        // 自动生成详情和图片
+        // 优先使用预生成的图片
+        const pregeneratedImage = `/poems/poem-${poemId}.jpg`;
+        setPoem({
+          ...result.data,
+          imageUrl: pregeneratedImage,
+        });
+        // 只生成详情信息（作者介绍、背景、翻译、问题）
         await generateDetails(result.data);
       }
     } catch (error) {
@@ -74,9 +78,9 @@ export default function PoemDetailPage() {
 
   const generateDetails = async (poemData: Poem) => {
     try {
-      setGenerating({ details: true, image: false });
+      setGenerating({ details: true });
 
-      // 生成诗词详细信息（作者介绍、背景、翻译、问题）
+      // 只生成诗词详细信息（作者介绍、背景、翻译、问题）
       const detailsResponse = await fetch('/api/generate-poem-details', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -89,26 +93,10 @@ export default function PoemDetailPage() {
           ...detailsResult.data,
         }));
       }
-
-      setGenerating({ details: false, image: true });
-
-      // 生成图片
-      const imageResponse = await fetch('/api/generate-poem-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ poemData }),
-      });
-      const imageResult = await imageResponse.json();
-      if (imageResult.success) {
-        setPoem((prev) => ({
-          ...prev!,
-          imageUrl: imageResult.imageUrl,
-        }));
-      }
     } catch (error) {
       console.error('Failed to generate details:', error);
     } finally {
-      setGenerating({ details: false, image: false });
+      setGenerating({ details: false });
     }
   };
 
@@ -277,14 +265,7 @@ export default function PoemDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {generating.image ? (
-                <div className="aspect-video bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-pink-500 border-t-transparent mx-auto mb-3"></div>
-                    <p className="text-sm text-gray-600">正在生成诗词插画...</p>
-                  </div>
-                </div>
-              ) : poem.imageUrl ? (
+              {poem.imageUrl ? (
                 <div className="aspect-video rounded-lg overflow-hidden">
                   <img
                     src={poem.imageUrl}
@@ -294,7 +275,7 @@ export default function PoemDetailPage() {
                 </div>
               ) : (
                 <div className="aspect-video bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg flex items-center justify-center">
-                  <p className="text-gray-500">图片生成中...</p>
+                  <p className="text-gray-500">图片加载中...</p>
                 </div>
               )}
             </CardContent>

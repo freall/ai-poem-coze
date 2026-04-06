@@ -12,18 +12,19 @@
 
 ```
 ├── public/                 # 静态资源
+│   └── poems/              # 预生成的诗词意境图
 ├── scripts/                # 构建与启动脚本
 │   ├── build.sh            # 构建脚本
 │   ├── dev.sh              # 开发环境启动脚本
 │   ├── prepare.sh          # 预处理脚本
-│   └── start.sh            # 生产环境启动脚本
+│   ├── start.sh            # 生产环境启动脚本
+│   └── generate-poem-images.ts  # 批量生成诗词图片脚本
 ├── src/
 │   ├── app/                # 页面路由与布局
 │   │   ├── api/            # API 路由
 │   │   │   ├── poems/      # 诗词数据API
 │   │   │   ├── fetch-doc/  # 文档读取API
-│   │   │   ├── generate-poem-details/  # 诗词详情生成API（LLM）
-│   │   │   └── generate-poem-image/    # 诗词图片生成API
+│   │   │   └── generate-poem-details/  # 诗词详情生成API（LLM）
 │   │   ├── page.tsx        # 主页
 │   │   └── poem/[id]/page.tsx  # 诗词详情页
 │   ├── components/ui/      # Shadcn UI 组件库
@@ -81,7 +82,7 @@
 - 自动生成作者介绍（使用LLM）
 - 自动生成诗词背景介绍（使用LLM）
 - 自动生成诗意翻译（使用LLM）
-- 自动生成诗词意境图（使用Image Generation）
+- **使用预生成的诗词意境图**（图片已提前生成，加载速度快）
 - 美观的渐变色背景和卡片设计
 
 ### 3. 互动问答系统
@@ -94,7 +95,7 @@
 
 ### 4. 游戏化元素
 - 精美的渐变色卡片设计
-- 诗词图片自动生成（中国风插画风格）
+- **预生成的诗词图片**（中国风插画风格）
 - 答题成功庆祝动画
 - 答错答案解释
 - 进度追踪和得分统计
@@ -124,17 +125,7 @@
 }
 ```
 
-### 4. POST /api/generate-poem-image
-生成诗词意境图
-
-参数：
-```json
-{
-  "poemData": { ... }
-}
-```
-
-### 5. POST /api/fetch-doc
+### 4. POST /api/fetch-doc
 读取文档内容（用于解析附件）
 
 参数：
@@ -143,6 +134,9 @@
   "url": "https://..."
 }
 ```
+
+### 5. GET /poems/poem-[id].jpg
+获取预生成的诗词意境图
 
 ## 技术实现要点
 
@@ -156,10 +150,12 @@
 - 生成适合小朋友理解的诗词讲解
 - 生成3个相关问题和答案
 
-### 3. 图片生成
-- 使用 `coze-coding-dev-sdk` 的 ImageGenerationClient
-- 生成中国风插画风格的诗词意境图
-- 支持动态生成，用户点击诗词时实时生成
+### 3. 图片预生成（优化方案）✨
+- **批量生成脚本**：`scripts/generate-poem-images.ts`
+- **图片存储**：所有诗词意境图预先生成并保存到 `public/poems/` 目录
+- **快速加载**：用户访问时直接从静态资源加载，无需等待AI生成
+- **生成命令**：`pnpm exec tsx scripts/generate-poem-images.ts`
+- **图片命名规则**：`poem-{number}.jpg`（例如：poem-1.jpg）
 
 ### 4. 状态管理
 - 使用 React useState 管理诗词数据、答题状态
@@ -176,9 +172,9 @@
 ## 已知问题和注意事项
 
 1. **诗词数量**：当前解析器识别了48首诗词（主要是节气类），节日类诗词需要进一步优化解析逻辑
-2. **图片生成时间**：图片生成需要几秒钟，显示加载动画
-3. **LLM 生成时间**：诗词详情生成需要几秒钟，显示加载状态
-4. **TypeScript 警告**：部分未使用的变量和导入，但不影响功能
+2. **LLM 生成时间**：诗词详情生成需要几秒钟，显示加载状态
+3. **TypeScript 警告**：部分未使用的变量和导入，但不影响功能
+4. **图片预生成**：需要预先运行生成脚本，首次部署时需要等待图片生成完成（约3-4分钟）
 
 ## 测试命令
 
@@ -186,6 +182,9 @@
 # 代码静态检查
 pnpm lint
 pnpm ts-check
+
+# 批量生成所有诗词图片（部署前执行）
+pnpm exec tsx scripts/generate-poem-images.ts
 
 # 启动开发环境
 pnpm dev
@@ -196,6 +195,14 @@ pnpm build
 # 启动生产环境
 pnpm start
 ```
+
+## 部署流程
+
+### 首次部署
+1. 批量生成诗词图片：`pnpm exec tsx scripts/generate-poem-images.ts`
+2. 确认图片已生成：`ls public/poems/` （应显示48张图片）
+3. 构建项目：`pnpm build`
+4. 启动服务：`pnpm start`
 
 ## 端口信息
 
