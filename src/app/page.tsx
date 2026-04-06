@@ -25,11 +25,12 @@ export default function Home() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/poems?category=all');
+      // 从静态JSON文件读取数据
+      const response = await fetch('/data/poems.json');
       const result = await response.json();
-      if (result.success) {
-        setCategories(result.data.categories);
-        setTotalPoems(result.data.total);
+      if (result) {
+        setCategories(result.categories);
+        setTotalPoems(result.total);
       }
     } catch (error) {
       console.error('Failed to fetch categories:', error);
