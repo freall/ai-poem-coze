@@ -360,4 +360,34 @@ export const useStore = create<Store>((set) => ({
 2. **优先使用 shadcn/ui 组件** 而不是从零开发基础组件
 3. **遵循 Next.js App Router 规范**，正确区分服务端/客户端组件
 4. **使用 TypeScript** 进行类型安全开发
+
+## 🚀 部署
+
+本项目推荐使用 **Vercel** 进行自动部署，完全支持 Next.js API 路由。
+
+### 快速部署到 Vercel
+
+**最简单的方式：**
+
+1. 访问 [vercel.com/new](https://vercel.com/new)
+2. 导入 GitHub 仓库：`freall/ai-poem-coze`
+3. 点击 "Deploy"
+
+就这么简单！几分钟内你的应用就会上线。
+
+详细部署指南请查看：
+- 📖 [快速开始部署指南](./QUICKSTART.md)
+- 📚 [完整部署文档](./DEPLOYMENT.md)
+
+### 自动部署
+
+每次推送到 GitHub 的 `main` 分支，Vercel 会自动部署你的更新。
+
+### 备选方案
+
+- **Netlify**: 也完全支持 Next.js，参见 `netlify.toml`
+- **GitHub Actions**: 可配置 CI/CD 流程，参见 `.github/workflows/vercel-deploy.yml`
+
+⚠️ **注意**：由于本项目使用了 API 路由，**不推荐**使用 GitHub Pages（仅支持静态内容）。
+
 5. **使用 `@/` 路径别名** 导入模块（已配置）
